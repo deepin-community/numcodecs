@@ -1,0 +1,7 @@
+0001-No-spninx-issues.patch
+0002-No-embedded-libs.patch
+0003-Clean-fixtures.patch
+0004-Cpuinfo.patch
+0005-Skip-broken-tests-on-BE-archs.patch
+0006-Fix-bigendian-shuffle-test.patch.patch
+0007-Reproducible-build.patch

@@ -1,0 +1,64 @@
+From: Debian Science Maintainers
+ <debian-science-maintainers@lists.alioth.debian.org>
+Date: Sat, 5 Oct 2019 11:45:42 +0000
+Subject: No embedded libs
+
+Build against system libraries: c-blosc, zlib, zstd. lz4
+---
+ MANIFEST.in | 2 +-
+ setup.py    | 9 ++++++---
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/MANIFEST.in b/MANIFEST.in
+index e7fd5fe..6f7aeba 100644
+--- a/MANIFEST.in
++++ b/MANIFEST.in
+@@ -1,4 +1,4 @@
+-recursive-include c-blosc *
++# recursive-include c-blosc *
+ recursive-include numcodecs *.pyx
+ recursive-include numcodecs *.pxd
+ recursive-include numcodecs *.c
+diff --git a/setup.py b/setup.py
+index fc9c699..51c1567 100644
+--- a/setup.py
++++ b/setup.py
+@@ -112,10 +112,11 @@ def blosc_extension():
+     # define extension module
+     extensions = [
+         Extension('numcodecs.blosc',
+-                  sources=sources + blosc_sources,
++                  sources=sources,  # + blosc_sources,
+                   include_dirs=include_dirs,
+                   define_macros=define_macros,
+                   extra_compile_args=extra_compile_args,
++                  libraries=['blosc', 'z'],
+                   ),
+     ]
+ 
+@@ -152,10 +153,11 @@ def zstd_extension():
+     # define extension module
+     extensions = [
+         Extension('numcodecs.zstd',
+-                  sources=sources + zstd_sources,
++                  sources=sources,  # + zstd_sources,
+                   include_dirs=include_dirs,
+                   define_macros=define_macros,
+                   extra_compile_args=extra_compile_args,
++                  libraries=['zstd'],
+                   ),
+     ]
+ 
+@@ -185,10 +187,11 @@ def lz4_extension():
+     # define extension module
+     extensions = [
+         Extension('numcodecs.lz4',
+-                  sources=sources + lz4_sources,
++                  sources=sources,  # + lz4_sources,
+                   include_dirs=include_dirs,
+                   define_macros=define_macros,
+                   extra_compile_args=extra_compile_args,
++                  libraries=['lz4'],
+                   ),
+     ]
+ 

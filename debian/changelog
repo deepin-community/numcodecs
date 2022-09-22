@@ -1,0 +1,80 @@
+numcodecs (0.8.1+ds-3) unstable; urgency=medium
+
+  * debian/patches:
+    - new 0007-Reproducible-build.patch, to male documentation
+      build reproducible (thanks to Chris Lamb).
+      Closes: #992804.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 04 Sep 2021 09:25:57 +0000
+
+numcodecs (0.8.1+ds-2) unstable; urgency=medium
+
+  * debian/patches:
+    - refresh all patches
+    - fix typo in 0004-Cpuinfo.patch
+    - new 0006-Fix-bigendian-shuffle-test.patch, to fix a shuffle
+      test on big-endian architectures.
+      See also https://github.com/zarr-developers/numcodecs/pull/282,
+      and https://github.com/zarr-developers/numcodecs/issues/286.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Wed, 25 Aug 2021 17:21:23 +0000
+
+numcodecs (0.8.1+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update debian/watch file.
+  * Update debian/copyright file.
+  * debian/control:
+    - add build dependency on python3-sphinx-issues.
+  * debian/rules:
+    - fix PYTHONPATH in doc build rule.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 22 Aug 2021 09:50:52 +0000
+
+numcodecs (0.7.3+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - refresh all patches
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 29 Jan 2021 07:01:29 +0000
+
+numcodecs (0.7.2+ds-2) unstable; urgency=medium
+
+  [ Antonio Valentino ]
+  * Standards-Version bumped to 4.5.1 (no changes).
+  * debian/patches:
+    - new 0005-cpuinfo.patch to avoid setup.py errors on architectures
+      not supported by cpuinfo
+    - new 0006-Skip-broken-tests-on-BE-archs.patch
+
+  [ Anton Gladky ]
+  * Add .gitlab-ci.yml
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Tue, 08 Dec 2020 08:07:23 +0000
+
+numcodecs (0.7.2+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Refresh all patches.
+  * Standards version bumped to 4.5.0.
+  * 0004-Clean-fixtures.patch forwarded upstream.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 20 Sep 2020 07:38:13 +0000
+
+numcodecs (0.6.4+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update license file for cpuinfo.
+  * debian/patches:
+    - drop 0002-Use-mock-from-stdlib.patch and
+      0004-Fix-unittest-failure.patch, applied upstream
+    - refresh and renumber remaining patches
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Thu, 26 Dec 2019 09:53:29 +0000
+
+numcodecs (0.6.3+ds-1) unstable; urgency=medium
+
+  * Initial version (Closes: #888482)
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 05 Oct 2019 18:36:52 +0000

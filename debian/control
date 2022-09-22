@@ -1,0 +1,53 @@
+Source: numcodecs
+Maintainer: Debian Science Maintainers <debian-science-maintainers@lists.alioth.debian.org>
+Uploaders: Antonio Valentino <antonio.valentino@tiscali.it>
+Section: python
+Testsuite: autopkgtest-pkg-python
+Priority: optional
+Build-Depends: debhelper-compat (= 12),
+               dh-python,
+               cython3,
+               libblosc-dev,
+               liblz4-dev,
+               libzstd-dev,
+               python3-all-dev,
+               python3-msgpack,
+               python3-numpy,
+               python3-numpydoc,
+               python3-pip,
+               python3-pytest,
+               python3-setuptools,
+               python3-setuptools-scm,
+               python3-sphinx,
+               python3-sphinx-issues,
+               zlib1g-dev
+Standards-Version: 4.5.1
+Vcs-Browser: https://salsa.debian.org/science-team/numcodecs
+Vcs-Git: https://salsa.debian.org/science-team/numcodecs.git
+Homepage: https://github.com/zarr-developers/numcodecs
+Rules-Requires-Root: no
+
+Package: python3-numcodecs
+Architecture: any
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         ${shlibs:Depends},
+         ${sphinxdoc:Depends},
+         python3-numpy
+Recommends: ${python3:Recommends},
+            python3-msgpack,
+            python3-pytest
+Suggests: ${python3:Suggests},
+          www-browser
+Description: buffer compression and transformation codecs for Python
+ Numcodecs is a Python package providing buffer compression and
+ transformation codecs for use in data storage and communication
+ applications. These include:
+ .
+   - Compression codecs, e.g., Zlib, BZ2, LZMA and Blosc.
+   - Pre-compression filters, e.g., Delta, Quantize, FixedScaleOffset,
+     PackBits, Categorize.
+   - Integrity checks, e.g., CRC32, Adler32.
+ .
+ All codecs implement the same API, allowing codecs to be organized into
+ pipelines in a variety of ways.

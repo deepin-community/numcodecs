@@ -1,0 +1,13 @@
+Document: numcodecs
+Title: NumCodecs Documentation
+Author: Alistair Miles
+Abstract: This document includes the NumCodecs user manual and
+ reference guide.
+Section: Programming/Python
+
+Format: HTML
+Index: /usr/share/doc/python3-numcodecs/html/index.html
+Files: /usr/share/doc/python3-numcodecs/html/*.html
+
+Format: text
+Files: /usr/share/doc/python3-numcodecs/html/_sources/*.txt
