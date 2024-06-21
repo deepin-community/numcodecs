@@ -2,26 +2,34 @@ Source: numcodecs
 Maintainer: Debian Science Maintainers <debian-science-maintainers@lists.alioth.debian.org>
 Uploaders: Antonio Valentino <antonio.valentino@tiscali.it>
 Section: python
-Testsuite: autopkgtest-pkg-python
+Testsuite: autopkgtest-pkg-pybuild
 Priority: optional
-Build-Depends: debhelper-compat (= 12),
+Build-Depends: debhelper-compat (= 13),
                dh-python,
+               dh-sequence-python3,
+               dh-sequence-numpy3,
+               dh-sequence-sphinxdoc,
                cython3,
                libblosc-dev,
                liblz4-dev,
                libzstd-dev,
+               py-cpuinfo,
+               pybuild-plugin-pyproject,
                python3-all-dev,
+               python3-importlib-metadata <!nocheck>,
                python3-msgpack,
                python3-numpy,
                python3-numpydoc,
-               python3-pip,
-               python3-pytest,
+               python3-pytest <!nocheck>,
+               python3-pytest-cov <!nocheck>,
                python3-setuptools,
                python3-setuptools-scm,
-               python3-sphinx,
-               python3-sphinx-issues,
+               python3-sphinx <!nodoc>,
+               python3-sphinx-issues <!nodoc>,
+               python3-typing-extensions,
+               python3-zfpy,
                zlib1g-dev
-Standards-Version: 4.5.1
+Standards-Version: 4.6.2
 Vcs-Browser: https://salsa.debian.org/science-team/numcodecs
 Vcs-Git: https://salsa.debian.org/science-team/numcodecs.git
 Homepage: https://github.com/zarr-developers/numcodecs
@@ -33,10 +41,11 @@ Depends: ${misc:Depends},
          ${python3:Depends},
          ${shlibs:Depends},
          ${sphinxdoc:Depends},
-         python3-numpy
+         python3-typing-extensions
 Recommends: ${python3:Recommends},
             python3-msgpack,
-            python3-pytest
+            python3-pytest,
+            python3-zfpy
 Suggests: ${python3:Suggests},
           www-browser
 Description: buffer compression and transformation codecs for Python

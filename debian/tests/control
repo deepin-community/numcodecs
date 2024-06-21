@@ -1,2 +1,0 @@
-Tests: python3
-Depends: @, python3-msgpack, python3-pytest
