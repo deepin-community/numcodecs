@@ -8,10 +8,10 @@ Forwarded: https://github.com/zarr-developers/numcodecs/pull/249
  1 file changed, 4 insertions(+)
 
 diff --git a/numcodecs/tests/common.py b/numcodecs/tests/common.py
-index e95c89c..511d206 100644
+index ced38dc..8665110 100644
 --- a/numcodecs/tests/common.py
 +++ b/numcodecs/tests/common.py
-@@ -300,6 +300,10 @@ def check_backwards_compatibility(codec_id, arrays, codecs, precision=None, pref
+@@ -303,6 +303,10 @@ def check_backwards_compatibility(codec_id, arrays, codecs, precision=None, pref
                      assert_array_equal(arr, dec_arr)
                      assert arr_bytes == ensure_bytes(dec)
  

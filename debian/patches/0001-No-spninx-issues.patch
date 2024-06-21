@@ -9,10 +9,10 @@ Remove dependency from sphinx-issues (not packaged in debian)
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/docs/conf.py b/docs/conf.py
-index 0c978ac..c42651f 100644
+index fba84bc..298dc8a 100644
 --- a/docs/conf.py
 +++ b/docs/conf.py
-@@ -47,7 +47,7 @@ extensions = [
+@@ -46,7 +46,7 @@ extensions = [
      'sphinx.ext.autosummary',
      'sphinx.ext.viewcode',
      'numpydoc',

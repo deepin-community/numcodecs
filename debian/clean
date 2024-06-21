@@ -1,0 +1,3 @@
+*.*-info/
+numcodecs/version.py
+numcodecs/*.c

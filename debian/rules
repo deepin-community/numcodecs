@@ -8,23 +8,17 @@ export DISABLE_NUMCODECS_AVX2=1
 
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 export PYBUILD_NAME=numcodecs
-export DEFAULT_PYTHON=$(shell py3versions -d | cut -d n -f 2)
+export PYBUILD_TEST_ARGS=-k "not test_non_numpy_inputs and not test_non_numpy_inputs" --pyargs ${PYBUILD_NAME}
+export PYBUILD_AFTER_TEST=rm -rf {build_dir}/fixture {build_dir}/.coverage {build_dir}/coverage.xml
 
 %:
-	dh $@ --with python3,sphinxdoc --buildsystem=pybuild
+	dh $@ --buildsystem=pybuild
 
 override_dh_auto_build:
 	dh_auto_build
 ifeq (,$(filter nodoc,$(DEB_BUILD_OPTIONS)))
 	cd docs && \
-	env PYTHONPATH=$(CURDIR)/.pybuild/cpython3_$(DEFAULT_PYTHON)_numcodecs/build \
+	env PYTHONPATH=$(shell pybuild --build -i python3 -s custom --build-args 'echo {build_dir}') \
 	    http_proxy='http://127.0.0.1:9/' https_proxy='https://127.0.0.1:9/' \
 	python3 -m sphinx -N -E -T -b html . $(CURDIR)/.pybuild/docs/html/
 endif
-
-override_dh_auto_clean:
-	dh_auto_clean
-	$(RM) numcodecs/version.py
-	$(RM) -r numcodecs.egg-info/
-	$(RM) numcodecs/*.c
-	$(RM) -r $(shell find . -name __pycache__)

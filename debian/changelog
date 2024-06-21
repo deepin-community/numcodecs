@@ -1,3 +1,130 @@
+numcodecs (0.12.1+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - Refresh all patches.
+  * devina/control:
+    - add dependency on python3-importlib-metadata.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 21 Oct 2023 14:56:58 +0000
+
+numcodecs (0.12.0+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Standards version bumped to 4.6.2, no changes.
+  * debian/rules:
+    - Improve doc build.
+  * debian/control:
+    - Switch to debhelper-compat 13.
+    - Use <!nodoc> and <!nocheck> markers.
+    - Drop dependency on python3-entrypoints, and python3-pip.
+  * Switch to dh-sequence-*.
+  * Switch to autopkgtest-pkg-pybuild and drop the
+    no longer necessary d/tests folder.
+  * New d/clean file.
+  * Update d/copyright.
+  * New d/python3-numcodecs.lintian-overrides file.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 07 Oct 2023 10:23:09 +0000
+
+numcodecs (0.11.0+ds-4) unstable; urgency=medium
+
+  * Skip tests that are incompatible with numpy v1.24 in autopkgtest.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Thu, 29 Dec 2022 17:39:12 +0000
+
+numcodecs (0.11.0+ds-3) unstable; urgency=medium
+
+  * debian/rules:
+    - skip tests that are incompatible with numpy v1.24 (Closes: #1027231)
+    - enable numpy3 dh helper.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Thu, 29 Dec 2022 16:45:51 +0000
+
+numcodecs (0.11.0+ds-2) unstable; urgency=medium
+
+  * debian/patches:
+    - fix 0004-Cpuinfo.patch
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 17 Dec 2022 10:37:06 +0000
+
+numcodecs (0.11.0+ds-1) unstable; urgency=medium
+
+  * debian/tests/control:
+    - add python3-zfpy to autopkgtest dependencies.
+  * debian/copyright:
+    - update the FilesExcluded field (auto-generated .c code no longer included
+      in the upstream source archive)
+    - remove entry for cpuinfo: no longer needed.
+  * debian/patches:
+    - refresh all patches.
+  * debian/control:
+    - add build-dependency on py-cpuinfo
+    - add build-dependency on python3-pytest-cov
+    - add build-dependency on pybuild-plugin-pyproject.
+  * debian/rules:
+    - remove unneeded files from the installation folder.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 16 Dec 2022 11:00:31 +0000
+
+numcodecs (0.10.2+ds-2) unstable; urgency=medium
+
+  * debian/patches:
+    - refresh all patches.
+  * Fix d/copyright formatting.
+  * debian/control:
+    - recommend python3-zfpy
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 01 Oct 2022 07:10:01 +0000
+
+numcodecs (0.10.2+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 05 Aug 2022 07:49:54 +0000
+
+numcodecs (0.10.1+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/control:
+    - add dependency on python3-entrypoints.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 30 Jul 2022 11:26:36 +0000
+
+numcodecs (0.10.0+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Standards version bumped to 4.6.1 (no changes).
+  * debian/patches:
+    - drop 0006-Fix-bigendian-shuffle-test.patch.patch, applied upstream
+    - refresh all remaining patches.
+  * debian/control:
+    - add dependency on python3-typing-extensions.
+  * debian/tests:
+    - perform autopackagetests on all supported platform.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sun, 26 Jun 2022 06:47:44 +0000
+
+numcodecs (0.9.1+ds-2) unstable; urgency=medium
+
+  * Fix installation of extension modules for Python 3.10.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 05 Feb 2022 18:58:25 +0000
+
+numcodecs (0.9.1+ds-1) unstable; urgency=medium
+
+  ° New upstream release.
+  * Standards version bumped to 4.6.0 (no chenges).
+  * Update d/watch.
+  * Update d/copyright.
+  * debian/patches:
+    - refresh all patches.
+    - new 0008-Enable-snappy.patch.
+  * debian/rules:
+    - remove the fixture folder after build.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 05 Feb 2022 09:54:10 +0000
+
 numcodecs (0.8.1+ds-3) unstable; urgency=medium
 
   * debian/patches:

@@ -228,9 +228,9 @@ def compress(source, char* cname, int clevel, int shuffle=SHUFFLE,
     clevel : int
         Compression level.
     shuffle : int
-        Either NOSHUFFLE (0), SHUFFLE (1), BITSHUFFLE (2) or AUTOSHUFFLE (-1). If -1
-        (default), bit-shuffle will be used for buffers with itemsize 1,
-        and byte-shuffle will be used otherwise.
+        Either NOSHUFFLE (0), SHUFFLE (1), BITSHUFFLE (2) or AUTOSHUFFLE (-1). If AUTOSHUFFLE,
+        bit-shuffle will be used for buffers with itemsize 1, and byte-shuffle will
+        be used otherwise. The default is `SHUFFLE`.
     blocksize : int
         The requested size of the compressed blocks.  If 0, an automatic blocksize will
         be used.
@@ -422,7 +422,7 @@ def decompress_partial(source, start, nitems, dest=None):
     cdef:
         int ret
         int encoding_size
-        int nitems_bytes 
+        int nitems_bytes
         int start_bytes
         char *source_ptr
         char *dest_ptr
@@ -436,7 +436,7 @@ def decompress_partial(source, start, nitems, dest=None):
     # get encoding size from source buffer header
     encoding_size = source[3]
 
-    # convert varibles to handle type and encoding sizes
+    # convert variables to handle type and encoding sizes
     nitems_bytes = nitems * encoding_size
     start_bytes = (start * encoding_size)
 
@@ -463,7 +463,7 @@ def decompress_partial(source, start, nitems, dest=None):
         if dest_buffer is not None:
             dest_buffer.release()
 
-    # ret refers to the number of bytes returned from blosc_getitem. 
+    # ret refers to the number of bytes returned from blosc_getitem.
     if ret <= 0:
         raise RuntimeError('error during blosc partial decompression: %d', ret)
 
@@ -525,9 +525,9 @@ class Blosc(Codec):
     clevel : integer, optional
         An integer between 0 and 9 specifying the compression level.
     shuffle : integer, optional
-        Either NOSHUFFLE (0), SHUFFLE (1), BITSHUFFLE (2) or AUTOSHUFFLE (-1). If -1
-        (default), bit-shuffle will be used for buffers with itemsize 1,
-        and byte-shuffle will be used otherwise.
+        Either NOSHUFFLE (0), SHUFFLE (1), BITSHUFFLE (2) or AUTOSHUFFLE (-1). If AUTOSHUFFLE,
+        bit-shuffle will be used for buffers with itemsize 1, and byte-shuffle will
+        be used otherwise. The default is `SHUFFLE`.
     blocksize : int
         The requested size of the compressed blocks.  If 0 (default), an automatic
         blocksize will be used.
