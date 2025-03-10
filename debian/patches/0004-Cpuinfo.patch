@@ -8,11 +8,11 @@ Forwarded: https://github.com/zarr-developers/numcodecs/pull/258
  1 file changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/setup.py b/setup.py
-index 46a0aa0..d25f58c 100644
+index 5755c2c..3163c23 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -2,14 +2,19 @@ import os
- import sys
+@@ -5,14 +5,19 @@ from distutils.command.clean import clean
+ from distutils.sysconfig import customize_compiler
  from glob import glob
  
 -import cpuinfo

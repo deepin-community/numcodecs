@@ -1,7 +1,7 @@
 import numpy as np
 
 from .abc import Codec
-from .compat import ndarray_copy, ensure_ndarray
+from .compat import ensure_ndarray, ndarray_copy
 
 
 class AsType(Codec):
@@ -45,17 +45,13 @@ class AsType(Codec):
         self.decode_dtype = np.dtype(decode_dtype)
 
     def encode(self, buf):
-
         # normalise input
         arr = ensure_ndarray(buf).view(self.decode_dtype)
 
         # convert and copy
-        enc = arr.astype(self.encode_dtype)
-
-        return enc
+        return arr.astype(self.encode_dtype)
 
     def decode(self, buf, out=None):
-
         # normalise input
         enc = ensure_ndarray(buf).view(self.encode_dtype)
 
@@ -63,9 +59,7 @@ class AsType(Codec):
         dec = enc.astype(self.decode_dtype)
 
         # handle output
-        out = ndarray_copy(dec, out)
-
-        return out
+        return ndarray_copy(dec, out)
 
     def get_config(self):
         return {
@@ -75,10 +69,4 @@ class AsType(Codec):
         }
 
     def __repr__(self):
-        return (
-            '{}(encode_dtype={!r}, decode_dtype={!r})'.format(
-                type(self).__name__,
-                self.encode_dtype.str,
-                self.decode_dtype.str
-            )
-        )
+        return f'{type(self).__name__}(encode_dtype={self.encode_dtype.str!r}, decode_dtype={self.decode_dtype.str!r})'

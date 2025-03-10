@@ -1,5 +1,8 @@
 import os
 import sys
+from distutils import ccompiler
+from distutils.command.clean import clean
+from distutils.sysconfig import customize_compiler
 from glob import glob
 
 import cpuinfo
@@ -37,12 +40,12 @@ if sys.platform == 'darwin':
 
 
 def info(*msg):
-    kwargs = dict(file=sys.stdout)
+    kwargs = {'file': sys.stdout}
     print('[numcodecs]', *msg, **kwargs)
 
 
 def error(*msg):
-    kwargs = dict(file=sys.stderr)
+    kwargs = {'file': sys.stderr}
     print('[numcodecs]', *msg, **kwargs)
 
 
@@ -53,8 +56,7 @@ def blosc_extension():
     define_macros = []
 
     # setup blosc sources
-    blosc_sources = [f for f in glob('c-blosc/blosc/*.c')
-                     if 'avx2' not in f and 'sse2' not in f]
+    blosc_sources = [f for f in glob('c-blosc/blosc/*.c') if 'avx2' not in f and 'sse2' not in f]
     include_dirs = [os.path.join('c-blosc', 'blosc')]
 
     # add internal complibs
@@ -65,16 +67,17 @@ def blosc_extension():
     blosc_sources += glob('c-blosc/internal-complibs/zstd*/compress/*.c')
     blosc_sources += glob('c-blosc/internal-complibs/zstd*/decompress/*.c')
     blosc_sources += glob('c-blosc/internal-complibs/zstd*/dictBuilder/*.c')
-    include_dirs += [d for d in glob('c-blosc/internal-complibs/*')
-                     if os.path.isdir(d)]
-    include_dirs += [d for d in glob('c-blosc/internal-complibs/*/*')
-                     if os.path.isdir(d)]
-    include_dirs += [d for d in glob('c-blosc/internal-complibs/*/*/*')
-                     if os.path.isdir(d)]
-    define_macros += [('HAVE_LZ4', 1),
-                      # ('HAVE_SNAPPY', 1),
-                      ('HAVE_ZLIB', 1),
-                      ('HAVE_ZSTD', 1)]
+    include_dirs += [d for d in glob('c-blosc/internal-complibs/*') if os.path.isdir(d)]
+    include_dirs += [d for d in glob('c-blosc/internal-complibs/*/*') if os.path.isdir(d)]
+    include_dirs += [d for d in glob('c-blosc/internal-complibs/*/*/*') if os.path.isdir(d)]
+    # remove minizip because Python.h 3.8 tries to include crypt.h
+    include_dirs = [d for d in include_dirs if 'minizip' not in d]
+    define_macros += [
+        ('HAVE_LZ4', 1),
+        # ('HAVE_SNAPPY', 1),
+        ('HAVE_ZLIB', 1),
+        ('HAVE_ZSTD', 1),
+    ]
     # define_macros += [('CYTHON_TRACE', '1')]
 
     # SSE2
@@ -97,19 +100,27 @@ def blosc_extension():
     else:
         info('compiling Blosc extension without AVX2 support')
 
+    # include assembly files
+    if cpuinfo.platform.machine() == 'x86_64':
+        extra_objects = [
+            S[:-1] + 'o' for S in glob("c-blosc/internal-complibs/zstd*/decompress/*amd64.S")
+        ]
+    else:
+        extra_objects = []
+
     sources = ['numcodecs/blosc.pyx']
 
     # define extension module
-    extensions = [
-        Extension('numcodecs.blosc',
-                  sources=sources + blosc_sources,
-                  include_dirs=include_dirs,
-                  define_macros=define_macros,
-                  extra_compile_args=extra_compile_args,
-                  ),
+    return [
+        Extension(
+            'numcodecs.blosc',
+            sources=sources + blosc_sources,
+            include_dirs=include_dirs,
+            define_macros=define_macros,
+            extra_compile_args=extra_compile_args,
+            extra_objects=extra_objects,
+        ),
     ]
-
-    return extensions
 
 
 def zstd_extension():
@@ -125,25 +136,31 @@ def zstd_extension():
     zstd_sources += glob('c-blosc/internal-complibs/zstd*/compress/*.c')
     zstd_sources += glob('c-blosc/internal-complibs/zstd*/decompress/*.c')
     zstd_sources += glob('c-blosc/internal-complibs/zstd*/dictBuilder/*.c')
-    include_dirs += [d for d in glob('c-blosc/internal-complibs/zstd*')
-                     if os.path.isdir(d)]
-    include_dirs += [d for d in glob('c-blosc/internal-complibs/zstd*/*')
-                     if os.path.isdir(d)]
+    include_dirs += [d for d in glob('c-blosc/internal-complibs/zstd*') if os.path.isdir(d)]
+    include_dirs += [d for d in glob('c-blosc/internal-complibs/zstd*/*') if os.path.isdir(d)]
     # define_macros += [('CYTHON_TRACE', '1')]
 
     sources = ['numcodecs/zstd.pyx']
 
-    # define extension module
-    extensions = [
-        Extension('numcodecs.zstd',
-                  sources=sources + zstd_sources,
-                  include_dirs=include_dirs,
-                  define_macros=define_macros,
-                  extra_compile_args=extra_compile_args,
-                  ),
-    ]
+    # include assembly files
+    if cpuinfo.platform.machine() == 'x86_64':
+        extra_objects = [
+            S[:-1] + 'o' for S in glob("c-blosc/internal-complibs/zstd*/decompress/*amd64.S")
+        ]
+    else:
+        extra_objects = []
 
-    return extensions
+    # define extension module
+    return [
+        Extension(
+            'numcodecs.zstd',
+            sources=sources + zstd_sources,
+            include_dirs=include_dirs,
+            define_macros=define_macros,
+            extra_compile_args=extra_compile_args,
+            extra_objects=extra_objects,
+        ),
+    ]
 
 
 def lz4_extension():
@@ -161,41 +178,40 @@ def lz4_extension():
     sources = ['numcodecs/lz4.pyx']
 
     # define extension module
-    extensions = [
-        Extension('numcodecs.lz4',
-                  sources=sources + lz4_sources,
-                  include_dirs=include_dirs,
-                  define_macros=define_macros,
-                  extra_compile_args=extra_compile_args,
-                  ),
+    return [
+        Extension(
+            'numcodecs.lz4',
+            sources=sources + lz4_sources,
+            include_dirs=include_dirs,
+            define_macros=define_macros,
+            extra_compile_args=extra_compile_args,
+        ),
     ]
-
-    return extensions
 
 
 def vlen_extension():
     info('setting up vlen extension')
+    import numpy
 
     extra_compile_args = base_compile_args.copy()
     define_macros = []
 
     # setup sources
-    include_dirs = ['numcodecs']
+    include_dirs = ['numcodecs', numpy.get_include()]
     # define_macros += [('CYTHON_TRACE', '1')]
 
     sources = ['numcodecs/vlen.pyx']
 
     # define extension module
-    extensions = [
-        Extension('numcodecs.vlen',
-                  sources=sources,
-                  include_dirs=include_dirs,
-                  define_macros=define_macros,
-                  extra_compile_args=extra_compile_args,
-                  ),
+    return [
+        Extension(
+            'numcodecs.vlen',
+            sources=sources,
+            include_dirs=include_dirs,
+            define_macros=define_macros,
+            extra_compile_args=extra_compile_args,
+        ),
     ]
-
-    return extensions
 
 
 def fletcher_extension():
@@ -211,16 +227,15 @@ def fletcher_extension():
     sources = ['numcodecs/fletcher32.pyx']
 
     # define extension module
-    extensions = [
-        Extension('numcodecs.fletcher32',
-                  sources=sources,
-                  include_dirs=include_dirs,
-                  define_macros=define_macros,
-                  extra_compile_args=extra_compile_args,
-                  ),
+    return [
+        Extension(
+            'numcodecs.fletcher32',
+            sources=sources,
+            include_dirs=include_dirs,
+            define_macros=define_macros,
+            extra_compile_args=extra_compile_args,
+        ),
     ]
-
-    return extensions
 
 
 def jenkins_extension():
@@ -236,16 +251,15 @@ def jenkins_extension():
     sources = ['numcodecs/jenkins.pyx']
 
     # define extension module
-    extensions = [
-        Extension('numcodecs.jenkins',
-                  sources=sources,
-                  include_dirs=include_dirs,
-                  define_macros=define_macros,
-                  extra_compile_args=extra_compile_args,
-                  ),
+    return [
+        Extension(
+            'numcodecs.jenkins',
+            sources=sources,
+            include_dirs=include_dirs,
+            define_macros=define_macros,
+            extra_compile_args=extra_compile_args,
+        ),
     ]
-
-    return extensions
 
 
 def compat_extension():
@@ -256,13 +270,13 @@ def compat_extension():
     sources = ['numcodecs/compat_ext.pyx']
 
     # define extension module
-    extensions = [
-        Extension('numcodecs.compat_ext',
-                  sources=sources,
-                  extra_compile_args=extra_compile_args),
+    return [
+        Extension(
+            'numcodecs.compat_ext',
+            sources=sources,
+            extra_compile_args=extra_compile_args,
+        ),
     ]
-
-    return extensions
 
 
 def shuffle_extension():
@@ -273,18 +287,13 @@ def shuffle_extension():
     sources = ['numcodecs/_shuffle.pyx']
 
     # define extension module
-    extensions = [
-        Extension('numcodecs._shuffle',
-                  sources=sources,
-                  extra_compile_args=extra_compile_args),
+    return [
+        Extension('numcodecs._shuffle', sources=sources, extra_compile_args=extra_compile_args),
     ]
-
-    return extensions
 
 
 if sys.platform == 'win32':
-    ext_errors = (CCompilerError, ExecError, PlatformError,
-                  IOError, ValueError)
+    ext_errors = (CCompilerError, ExecError, PlatformError, IOError, ValueError)
 else:
     ext_errors = (CCompilerError, ExecError, PlatformError)
 
@@ -298,27 +307,52 @@ class ve_build_ext(build_ext):
 
     def run(self):
         try:
+            if cpuinfo.platform.machine() == 'x86_64':
+                S_files = glob('c-blosc/internal-complibs/zstd*/decompress/*amd64.S')
+                compiler = ccompiler.new_compiler()
+                customize_compiler(compiler)
+                compiler.src_extensions.append('.S')
+                compiler.compile(S_files)
+
             build_ext.run(self)
         except PlatformError as e:
             error(e)
-            raise BuildFailed()
+            raise BuildFailed from e
 
     def build_extension(self, ext):
         try:
             build_ext.build_extension(self, ext)
         except ext_errors as e:
             error(e)
-            raise BuildFailed()
+            raise BuildFailed from e
+
+
+class Sclean(clean):
+    # Clean up .o files created by .S files
+
+    def run(self):
+        if cpuinfo.platform.machine() == 'x86_64':
+            o_files = glob('c-blosc/internal-complibs/zstd*/decompress/*amd64.o')
+            for f in o_files:
+                os.remove(f)
+
+        clean.run(self)
 
 
 def run_setup(with_extensions):
-
     if with_extensions:
-        ext_modules = (blosc_extension() + zstd_extension() + lz4_extension() +
-                       compat_extension() + shuffle_extension() + vlen_extension() +
-                       fletcher_extension() + jenkins_extension())
+        ext_modules = (
+            blosc_extension()
+            + zstd_extension()
+            + lz4_extension()
+            + compat_extension()
+            + shuffle_extension()
+            + vlen_extension()
+            + fletcher_extension()
+            + jenkins_extension()
+        )
 
-        cmdclass = dict(build_ext=ve_build_ext)
+        cmdclass = {'build_ext': ve_build_ext, 'clean': Sclean}
     else:
         ext_modules = []
         cmdclass = {}

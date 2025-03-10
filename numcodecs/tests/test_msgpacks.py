@@ -1,19 +1,21 @@
 import unittest
 
-
 import numpy as np
 import pytest
 
-
 try:
     from numcodecs.msgpacks import MsgPack
-except ImportError:  # pragma: no cover
-    raise unittest.SkipTest("msgpack not available")
+except ImportError as e:  # pragma: no cover
+    raise unittest.SkipTest("msgpack not available") from e
 
 
-from numcodecs.tests.common import (check_config, check_repr, check_encode_decode_array,
-                                    check_backwards_compatibility, greetings)
-
+from numcodecs.tests.common import (
+    check_backwards_compatibility,
+    check_config,
+    check_encode_decode_array,
+    check_repr,
+    greetings,
+)
 
 # object array with strings
 # object array with mix strings / nans
@@ -53,8 +55,11 @@ def test_backwards_compatibility():
     check_backwards_compatibility(codec.codec_id, arrays, [codec])
 
 
+@pytest.mark.filterwarnings(
+    "ignore:Creating an ndarray from ragged nested sequences .* is deprecated.*"
+)
 @pytest.mark.parametrize(
-    "input_data, dtype",
+    ("input_data", "dtype"),
     [
         ([0, 1], None),
         ([[0, 1], [2, 3]], None),
@@ -69,7 +74,7 @@ def test_backwards_compatibility():
         ([b"11", b"11"], None),
         ([b"11", b"1", b"1"], None),
         ([{b"key": b"value"}, [b"list", b"of", b"strings"]], object),
-    ]
+    ],
 )
 def test_non_numpy_inputs(input_data, dtype):
     codec = MsgPack()

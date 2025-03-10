@@ -1,3 +1,75 @@
+numcodecs (0.15.1+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Update links to fonts.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 15 Feb 2025 09:59:27 +0000
+
+numcodecs (0.15.0+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/control:
+    - Recommend python3-crc32c.
+    - Add dependency on python3-deprecated.
+  * debian/patches:
+    - Refresh all patches.
+  * debian/rules:
+    - Fix tests collection.
+  * Update dates in d/copyright.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 17 Jan 2025 19:15:20 +0000
+
+numcodecs (0.14.1+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - Drop 0009-No-mock.patch, applied upstream.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Fri, 22 Nov 2024 07:42:50 +0000
+
+numcodecs (0.14.0+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - Refresh all patches.
+    - New 0009-No-mock.patch.
+  * debian/control:
+    - Add dependency on python3-crc32c.
+  * debian/rules:
+    - Ignore numcodecs/zarr3.py during testing.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 16 Nov 2024 09:38:59 +0000
+
+numcodecs (0.13.1+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - Refresh all patches.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 12 Oct 2024 17:37:35 +0000
+
+numcodecs (0.13.0+ds-2) unstable; urgency=medium
+
+  * Standards version bumped to 4.7.0, no changes.
+  * debian/rules:
+    - Temporary skip test_native_functions (depends on the zstd version).
+      Closes: #1081627.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Sat, 14 Sep 2024 13:58:08 +0000
+
+numcodecs (0.13.0+ds-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches:
+    - Refresh all patches.
+    - New 0008-No-distutils.patch.
+  * debian/control:
+    - Update dependencies.
+    - Do not use unexisting substitutions.
+  * Update dates in d/copyright.
+
+ -- Antonio Valentino <antonio.valentino@tiscali.it>  Wed, 17 Jul 2024 06:04:34 +0000
+
 numcodecs (0.12.1+ds-1) unstable; urgency=medium
 
   * New upstream release.
@@ -128,7 +200,7 @@ numcodecs (0.9.1+ds-1) unstable; urgency=medium
 numcodecs (0.8.1+ds-3) unstable; urgency=medium
 
   * debian/patches:
-    - new 0007-Reproducible-build.patch, to male documentation
+    - new 0007-Reproducible-build.patch, to make documentation
       build reproducible (thanks to Chris Lamb).
       Closes: #992804.
 

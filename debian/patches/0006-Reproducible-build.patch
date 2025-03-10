@@ -9,10 +9,10 @@ Forwarded: not-needed
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/numcodecs/zfpy.py b/numcodecs/zfpy.py
-index ac09074..98cf148 100644
+index 831952a..f74d166 100644
 --- a/numcodecs/zfpy.py
 +++ b/numcodecs/zfpy.py
-@@ -33,12 +33,14 @@ if _zfpy:
+@@ -53,12 +53,14 @@ if _zfpy:
  
          def __init__(
              self,
