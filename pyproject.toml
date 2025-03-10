@@ -3,7 +3,8 @@ requires = [
     "setuptools>=64",
     "setuptools-scm[toml]>=6.2",
     "Cython",
-    "py-cpuinfo"
+    "py-cpuinfo",
+    "numpy>2",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -14,9 +15,10 @@ A Python package providing buffer compression and transformation codecs \
 for use in data storage and communication applications."""
 readme =  "README.rst"
 dependencies = [
-    "numpy>=1.7",
+    "numpy>=1.24",
+    "deprecated"
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 dynamic = [
   "version",
 ]
@@ -45,14 +47,13 @@ Homepage = "https://github.com/zarr-developers/numcodecs"
 
 [project.optional-dependencies]
 docs = [
-    "sphinx<7.0.0",
+    "sphinx",
     "sphinx-issues",
+    "pydata-sphinx-theme",
     "numpydoc",
-    "mock",
 ]
 test = [
     "coverage",
-    "flake8",
     "pytest",
     "pytest-cov",
 ]
@@ -63,8 +64,37 @@ msgpack = [
     "msgpack",
 ]
 zfpy = [
-    "zfpy>=1.0.0",
+    "zfpy>=1.0.0"
 ]
+pcodec = [
+    "pcodec>=0.3,<0.4",
+]
+crc32c = [
+    "crc32c>=2.7",
+]
+
+[project.entry-points."zarr.codecs"]
+"numcodecs.blosc" = "numcodecs.zarr3:Blosc"
+"numcodecs.lz4" = "numcodecs.zarr3:LZ4"
+"numcodecs.zstd" = "numcodecs.zarr3:Zstd"
+"numcodecs.zlib" = "numcodecs.zarr3:Zlib"
+"numcodecs.gzip" = "numcodecs.zarr3:GZip"
+"numcodecs.bz2" = "numcodecs.zarr3:BZ2"
+"numcodecs.lzma" = "numcodecs.zarr3:LZMA"
+"numcodecs.shuffle" = "numcodecs.zarr3:Shuffle"
+"numcodecs.delta" = "numcodecs.zarr3:Delta"
+"numcodecs.bitround" = "numcodecs.zarr3:BitRound"
+"numcodecs.fixedscaleoffset" = "numcodecs.zarr3:FixedScaleOffset"
+"numcodecs.quantize" = "numcodecs.zarr3:Quantize"
+"numcodecs.packbits" = "numcodecs.zarr3:PackBits"
+"numcodecs.astype" = "numcodecs.zarr3:AsType"
+"numcodecs.crc32" = "numcodecs.zarr3:CRC32"
+"numcodecs.crc32c" = "numcodecs.zarr3:CRC32C"
+"numcodecs.adler32" = "numcodecs.zarr3:Adler32"
+"numcodecs.fletcher32" = "numcodecs.zarr3:Fletcher32"
+"numcodecs.jenkins_lookup3" = "numcodecs.zarr3:JenkinsLookup3"
+"numcodecs.pcodec" = "numcodecs.zarr3:PCodec"
+"numcodecs.zfpy" = "numcodecs.zarr3:ZFPY"
 
 [tool.setuptools]
 license-files = ["LICENSE.txt"]
@@ -93,15 +123,18 @@ exclude_lines = [
     "pragma: ${PY_MAJOR_VERSION} no cover",
 ]
 
+[tool.repo-review]
+ignore = ["PY005", "PY007", "PP302", "PP308", "PP309", "GH103", "GH212", "PC111", "PC140", "PC160", "PC170", "PC180", "MY100", "RF103"]
+
 [tool.pytest.ini_options]
-addopts = "--cov=numcodecs --cov-report xml --doctest-modules --doctest-glob=*.pyx"
+addopts = "-ra --strict-config --strict-markers --cov=numcodecs --cov-report xml --doctest-modules --doctest-glob=*.pyx"
 doctest_optionflags = [
     "NORMALIZE_WHITESPACE",
     "ELLIPSIS",
     "IGNORE_EXCEPTION_DETAIL",
 ]
 testpaths = [
-    "numcodecs",
+    "numcodecs/tests",
 ]
 norecursedirs = [
     ".git",
@@ -115,6 +148,12 @@ norecursedirs = [
     "notebooks",
     "numcodecs.egg-info",
 ]
+log_cli_level = "INFO"
+xfail_strict = true
+filterwarnings = [
+    "error",
+]
+
 [tool.cibuildwheel]
 environment = { DISABLE_NUMCODECS_AVX2=1 }
 [tool.cibuildwheel.macos]
@@ -122,3 +161,80 @@ environment = { MACOSX_DEPLOYMENT_TARGET=10.9, DISABLE_NUMCODECS_AVX2=1, CFLAGS=
 [[tool.cibuildwheel.overrides]]
 select = "*-macosx_arm64"
 environment = { DISABLE_NUMCODECS_AVX2=1, DISABLE_NUMCODECS_SSE2=1 }
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["c-blosc"]
+src = ["numcodecs"]
+
+[tool.ruff.lint]
+extend-select = [
+    "B",
+    "C4",
+    "EXE",
+    "FA",
+    "FLY",
+    "FURB",
+    "G",
+    "I",
+    "ISC",
+    "LOG",
+    "PERF",
+    "PGH",
+    "PIE",
+    "PT",
+    "PYI",
+    "RET",
+    "RSE",
+    "RUF",
+    "SIM",
+    "SLOT",
+    "TID",
+    "TRY",
+    "UP",
+]
+ignore = [
+    "FURB101",
+    "FURB103",
+    "PT001",
+    "PT011",
+    "PT012",
+    "RET505",
+    "RET506",
+    "SIM108",
+    "TRY003",
+    "TRY301",
+    "UP007",
+    "UP038",  # https://github.com/astral-sh/ruff/issues/7871
+    # https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "W191",
+    "E111",
+    "E114",
+    "E117",
+    "D206",
+    "D300",
+    "Q000",
+    "Q001",
+    "Q002",
+    "Q003",
+    "COM812",
+    "COM819",
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"numcodecs/tests/**" = ["SIM201", "SIM202", "SIM300", "TRY002"]
+"notebooks/**" = ["W391"]  # https://github.com/astral-sh/ruff/issues/13763
+
+[tool.ruff.format]
+quote-style = "preserve"
+
+[tool.mypy]
+ignore_errors = false
+ignore_missing_imports = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+# TODO: set options below to true
+strict = false
+warn_unreachable = false
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unused_configs = true

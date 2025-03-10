@@ -5,3 +5,4 @@
 0005-Skip-broken-tests-on-BE-archs.patch
 0006-Reproducible-build.patch
 0007-Enable-snappy.patch
+0008-No-distutils.patch

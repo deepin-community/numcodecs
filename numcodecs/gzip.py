@@ -21,23 +21,17 @@ class GZip(Codec):
         self.level = level
 
     def encode(self, buf):
-
         # normalise inputs
         buf = ensure_contiguous_ndarray(buf)
 
         # do compression
         compressed = io.BytesIO()
-        with _gzip.GzipFile(fileobj=compressed,
-                            mode='wb',
-                            compresslevel=self.level) as compressor:
+        with _gzip.GzipFile(fileobj=compressed, mode='wb', compresslevel=self.level) as compressor:
             compressor.write(buf)
-        compressed = compressed.getvalue()
-
-        return compressed
+        return compressed.getvalue()
 
     # noinspection PyMethodMayBeStatic
     def decode(self, buf, out=None):
-
         # normalise inputs
         # BytesIO only copies if the data is not of `bytes` type.
         # This allows `bytes` objects to pass through without copying.

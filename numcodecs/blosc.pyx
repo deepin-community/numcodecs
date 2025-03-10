@@ -6,6 +6,7 @@
 import threading
 import multiprocessing
 import os
+from deprecated import deprecated
 
 
 from cpython.buffer cimport PyBUF_ANY_CONTIGUOUS, PyBUF_WRITEABLE
@@ -75,34 +76,50 @@ AUTOSHUFFLE = -1
 AUTOBLOCKS = 0
 
 # synchronization
-try:
-    mutex = multiprocessing.Lock()
-except OSError:
-    mutex = None
-except ImportError:
-    mutex = None
+_MUTEX = None
+_MUTEX_IS_INIT = False
+
+def get_mutex():
+    global _MUTEX_IS_INIT, _MUTEX
+    if not _MUTEX_IS_INIT:
+        try:
+            mutex = multiprocessing.Lock()
+        except OSError:
+            mutex = None
+        except ImportError:
+            mutex = None
+        _MUTEX = mutex
+        _MUTEX_IS_INIT = True
+    return _MUTEX
 
 # store ID of process that first loads the module, so we can detect a fork later
 _importer_pid = os.getpid()
 
 
-def init():
+def _init():
     """Initialize the Blosc library environment."""
     blosc_init()
 
+init = deprecated(_init)
 
-def destroy():
+
+def _destroy():
     """Destroy the Blosc library environment."""
     blosc_destroy()
 
 
-def compname_to_compcode(cname):
+destroy = deprecated(_destroy)
+
+
+def _compname_to_compcode(cname):
     """Return the compressor code associated with the compressor name. If the compressor
     name is not recognized, or there is not support for it in this build, -1 is returned
     instead."""
     if isinstance(cname, str):
         cname = cname.encode('ascii')
     return blosc_compname_to_compcode(cname)
+
+compname_to_compcode = deprecated(_compname_to_compcode)
 
 
 def list_compressors():
@@ -124,7 +141,7 @@ def set_nthreads(int nthreads):
     return blosc_set_nthreads(nthreads)
 
 
-def cbuffer_sizes(source):
+def _cbuffer_sizes(source):
     """Return information about a compressed buffer, namely the number of uncompressed
     bytes (`nbytes`) and compressed (`cbytes`).  It also returns the `blocksize` (which
     is used internally for doing the compression by blocks).
@@ -151,6 +168,7 @@ def cbuffer_sizes(source):
 
     return nbytes, cbytes, blocksize
 
+cbuffer_sizes = deprecated(_cbuffer_sizes)
 
 def cbuffer_complib(source):
     """Return the name of the compression library used to compress `source`."""
@@ -171,7 +189,7 @@ def cbuffer_complib(source):
     return complib
 
 
-def cbuffer_metainfo(source):
+def _cbuffer_metainfo(source):
     """Return some meta-information about the compressed buffer in `source`, including
     the typesize, whether the shuffle or bit-shuffle filters were used, and the
     whether the buffer was memcpyed.
@@ -208,11 +226,13 @@ def cbuffer_metainfo(source):
 
     return typesize, shuffle, memcpyed
 
+cbuffer_metainfo = deprecated(_cbuffer_metainfo)
 
-def err_bad_cname(cname):
+def _err_bad_cname(cname):
     raise ValueError('bad compressor or compressor not supported: %r; expected one of '
                      '%s' % (cname, list_compressors()))
 
+err_bad_cname = deprecated(_err_bad_cname)
 
 def compress(source, char* cname, int clevel, int shuffle=SHUFFLE,
              int blocksize=AUTOBLOCKS):
@@ -253,7 +273,7 @@ def compress(source, char* cname, int clevel, int shuffle=SHUFFLE,
     # check valid cname early
     cname_str = cname.decode('ascii')
     if cname_str not in list_compressors():
-        err_bad_cname(cname_str)
+        _err_bad_cname(cname_str)
 
     # setup source buffer
     source_buffer = Buffer(source, PyBUF_ANY_CONTIGUOUS)
@@ -284,14 +304,14 @@ def compress(source, char* cname, int clevel, int shuffle=SHUFFLE,
             # N.B., we are using blosc's global context, and so we need to use a lock
             # to ensure no-one else can modify the global context while we're setting it
             # up and using it.
-            with mutex:
+            with get_mutex():
 
                 # set compressor
                 compressor_set = blosc_set_compressor(cname)
                 if compressor_set < 0:
                     # shouldn't happen if we checked against list of compressors
                     # already, but just in case
-                    err_bad_cname(cname_str)
+                    _err_bad_cname(cname_str)
 
                 # set blocksize
                 blosc_set_blocksize(blocksize)
@@ -396,7 +416,7 @@ def decompress(source, dest=None):
     return dest
 
 
-def decompress_partial(source, start, nitems, dest=None):
+def _decompress_partial(source, start, nitems, dest=None):
     """**Experimental**
     Decompress data of only a part of a buffer.
 
@@ -468,7 +488,8 @@ def decompress_partial(source, start, nitems, dest=None):
         raise RuntimeError('error during blosc partial decompression: %d', ret)
 
     return dest
-        
+
+decompress_partial = deprecated(_decompress_partial)
 
 # set the value of this variable to True or False to override the
 # default adaptive behaviour
@@ -480,7 +501,7 @@ def _get_use_threads():
     proc = multiprocessing.current_process()
 
     # check if locks are available, and if not no threads
-    if not mutex:
+    if not get_mutex():
         return False
 
     # check for fork
@@ -566,7 +587,7 @@ class Blosc(Codec):
     def decode_partial(self, buf, int start, int nitems, out=None):
         '''**Experimental**'''
         buf = ensure_contiguous_ndarray(buf, self.max_buffer_size)
-        return decompress_partial(buf, start, nitems, dest=out)
+        return _decompress_partial(buf, start, nitems, dest=out)
 
     def __repr__(self):
         r = '%s(cname=%r, clevel=%r, shuffle=%s, blocksize=%s)' % \

@@ -8,10 +8,10 @@ Forwarded: https://github.com/zarr-developers/numcodecs/issues/256
  1 file changed, 2 insertions(+)
 
 diff --git a/numcodecs/tests/test_categorize.py b/numcodecs/tests/test_categorize.py
-index 924f974..439fa78 100644
+index 0ec115b..8fb51ee 100644
 --- a/numcodecs/tests/test_categorize.py
 +++ b/numcodecs/tests/test_categorize.py
-@@ -75,6 +75,8 @@ def test_repr():
+@@ -73,6 +73,8 @@ def test_repr():
      assert expect == actual
  
  
@@ -19,4 +19,4 @@ index 924f974..439fa78 100644
 +@pytest.mark.skipif(sys.byteorder == 'big', reason='broken test no BE architectures')
  def test_backwards_compatibility():
      codec = Categorize(labels=labels, dtype='<U4', astype='u1')
-     check_backwards_compatibility(Categorize.codec_id, arrays, [codec],
+     check_backwards_compatibility(Categorize.codec_id, arrays, [codec], prefix='U')

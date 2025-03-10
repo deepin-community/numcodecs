@@ -1,17 +1,19 @@
-_lzma = None
+from types import ModuleType
+from typing import Optional
+
+_lzma: Optional[ModuleType] = None
 try:
     import lzma as _lzma
 except ImportError:  # pragma: no cover
-    try:
-        from backports import lzma as _lzma
+    try:  # noqa: SIM105
+        from backports import lzma as _lzma  # type: ignore[no-redef]
     except ImportError:
         pass
 
 
 if _lzma:
-
     from .abc import Codec
-    from .compat import ndarray_copy, ensure_contiguous_ndarray
+    from .compat import ensure_contiguous_ndarray, ndarray_copy
 
     # noinspection PyShadowingBuiltins
     class LZMA(Codec):
@@ -42,16 +44,19 @@ if _lzma:
             self.filters = filters
 
         def encode(self, buf):
-
             # normalise inputs
             buf = ensure_contiguous_ndarray(buf)
 
             # do compression
-            return _lzma.compress(buf, format=self.format, check=self.check,
-                                  preset=self.preset, filters=self.filters)
+            return _lzma.compress(
+                buf,
+                format=self.format,
+                check=self.check,
+                preset=self.preset,
+                filters=self.filters,
+            )
 
         def decode(self, buf, out=None):
-
             # normalise inputs
             buf = ensure_contiguous_ndarray(buf)
             if out is not None:
@@ -64,7 +69,4 @@ if _lzma:
             return ndarray_copy(dec, out)
 
         def __repr__(self):
-            r = '%s(format=%r, check=%r, preset=%r, filters=%r)' % \
-                (type(self).__name__, self.format, self.check, self.preset,
-                 self.filters)
-            return r
+            return f'{type(self).__name__}(format={self.format!r}, check={self.check!r}, preset={self.preset!r}, filters={self.filters!r})'

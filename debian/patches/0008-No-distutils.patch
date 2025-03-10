@@ -1,0 +1,80 @@
+From: Antonio Valentino <antonio.valentino@tiscali.it>
+Date: Mon, 15 Jul 2024 19:57:03 +0000
+Subject: No distutils
+
+Forwarded: not-needed
+---
+ setup.py | 40 ++++++++++++++++++++--------------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index fba99d5..240c6e2 100644
+--- a/setup.py
++++ b/setup.py
+@@ -1,8 +1,8 @@
+ import os
+ import sys
+-from distutils import ccompiler
+-from distutils.command.clean import clean
+-from distutils.sysconfig import customize_compiler
++# from distutils import ccompiler
++# from distutils.command.clean import clean
++# from distutils.sysconfig import customize_compiler
+ from glob import glob
+ 
+ from Cython.Distutils.build_ext import new_build_ext as build_ext
+@@ -313,12 +313,12 @@ class ve_build_ext(build_ext):
+ 
+     def run(self):
+         try:
+-            if cpuinfo.platform.machine() == 'x86_64':
+-                S_files = glob('c-blosc/internal-complibs/zstd*/decompress/*amd64.S')
+-                compiler = ccompiler.new_compiler()
+-                customize_compiler(compiler)
+-                compiler.src_extensions.append('.S')
+-                compiler.compile(S_files)
++            # if cpuinfo.platform.machine() == 'x86_64':
++            #     S_files = glob('c-blosc/internal-complibs/zstd*/decompress/*amd64.S')
++            #     compiler = ccompiler.new_compiler()
++            #     customize_compiler(compiler)
++            #     compiler.src_extensions.append('.S')
++            #     compiler.compile(S_files)
+ 
+             build_ext.run(self)
+         except PlatformError as e:
+@@ -333,16 +333,16 @@ class ve_build_ext(build_ext):
+             raise BuildFailed from e
+ 
+ 
+-class Sclean(clean):
+-    # Clean up .o files created by .S files
+-
+-    def run(self):
+-        if cpuinfo.platform.machine() == 'x86_64':
+-            o_files = glob('c-blosc/internal-complibs/zstd*/decompress/*amd64.o')
+-            for f in o_files:
+-                os.remove(f)
+-
+-        clean.run(self)
++# class Sclean(clean):
++#     # Clean up .o files created by .S files
++#
++#     def run(self):
++#         if cpuinfo.platform.machine() == 'x86_64':
++#             o_files = glob('c-blosc/internal-complibs/zstd*/decompress/*amd64.o')
++#             for f in o_files:
++#                 os.remove(f)
++#
++#         clean.run(self)
+ 
+ 
+ def run_setup(with_extensions):
+@@ -358,7 +358,7 @@ def run_setup(with_extensions):
+             + jenkins_extension()
+         )
+ 
+-        cmdclass = {'build_ext': ve_build_ext, 'clean': Sclean}
++        cmdclass = {'build_ext': ve_build_ext}  # , 'clean': Sclean}
+     else:
+         ext_modules = []
+         cmdclass = {}

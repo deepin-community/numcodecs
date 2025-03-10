@@ -6,9 +6,22 @@
 export DISABLE_NUMCODECS_SSE2=1
 export DISABLE_NUMCODECS_AVX2=1
 
+ifneq (,${PYBUILD_AUTOPKGTEST})
+PKGDIR=/usr/lib/python3/dist-packages
+else
+PKGDIR=.
+endif
+
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 export PYBUILD_NAME=numcodecs
-export PYBUILD_TEST_ARGS=-k "not test_non_numpy_inputs and not test_non_numpy_inputs" --pyargs ${PYBUILD_NAME}
+export PYBUILD_TEST_ARGS=\
+-k "not test_non_numpy_inputs \
+and not test_non_numpy_inputs \
+and not test_native_functions" \
+--pyargs ${PYBUILD_NAME} \
+--ignore=${PKGDIR}/numcodecs/pcodec.py \
+--ignore=${PKGDIR}/numcodecs/zarr3.py \
+--ignore=${PKGDIR}/numcodecs/tests/test_zarr3.py
 export PYBUILD_AFTER_TEST=rm -rf {build_dir}/fixture {build_dir}/.coverage {build_dir}/coverage.xml
 
 %:
@@ -22,3 +35,8 @@ ifeq (,$(filter nodoc,$(DEB_BUILD_OPTIONS)))
 	    http_proxy='http://127.0.0.1:9/' https_proxy='https://127.0.0.1:9/' \
 	python3 -m sphinx -N -E -T -b html . $(CURDIR)/.pybuild/docs/html/
 endif
+
+execute_after_dh_sphinxdoc:
+	$(RM) -r debian/python3-numcodecs/usr/share/doc/python3-numcodecs/html/_static/scripts \
+		 debian/python3-numcodecs/usr/share/doc/python3-numcodecs/html/_static/styles \
+		 debian/python3-numcodecs/usr/share/doc/python3-numcodecs/html/_static/vendor

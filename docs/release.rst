@@ -6,6 +6,204 @@ Release notes
     # to document your changes. On releases it will be
     # re-indented so that it does not show up in the notes.
 
+    .. _unreleased:
+
+    Unreleased
+    ----------
+
+
+.. _unreleased:
+
+Unreleased
+----------
+
+Improvements
+~~~~~~~~~~~~
+* Raise a custom `UnknownCodecError` when trying to retrieve an unavailable codec.
+  By :user:`Cas Wognum <cwognum>`.
+
+Fixes
+~~~~~
+* Remove redundant ``id`` from codec metadata serialization in Zarr3 codecs.
+  By :user:`Norman Rzepka <normanrz>`, :issue:`685`
+
+.. _release_0.15.0:
+
+0.15.0
+------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+* All arguments to the ``PCodec`` constructor except for ``level``
+  are now keyword only, to support the updated API.
+  By :user:`Sam Levang <slevang>`, :issue:`623`
+
+Deprecations
+~~~~~~~~~~~~
+The following ``blosc`` funcitons are deprecated, with no replacement.
+This is because they are not intended to be public API.
+
+- ``numcodecs.blosc.init``
+- ``numcodecs.blosc.destroy``
+- ``numcodecs.blosc.compname_to_compcode``
+- ``numcodecs.blosc.cbuffer_sizes``
+- ``numcodecs.blosc.cbuffer_metainfo``
+
+In addition, ``numcodecs.blosc.decompress_partial`` is deprecated as
+has always been experimental and there is no equivalent in the official
+blsoc Python package.
+By :user:`David Stansby <dstansby>`, :issue`619`
+
+Fixes
+~~~~~
+* Fixes issue with ``Delta`` Zarr 3 codec not working with ``astype``.
+  By :user:`Norman Rzepka <normanrz>`, :issue:`664`
+* Cleanup ``PCodec`` soft dependency.
+  Previously importing ``numcodecs.pcodec`` would work if ``pcodec`` is not installed,
+  but now it will fail to import. This mirrors the behaviour of other optional dependencies.
+  By :user:`John Kirkham <jakirkham>`, :issue:`647`
+* Fixes issues with the upcoming ``zarr`` 3.0.0 release.
+  By :user:`Norman Rzepka <normanrz>`, :issue:`675`
+
+* Removed Version Check: The previous code included a check for the `NumPy` version
+  and a warning if the version was incompatible with `zfpy`.
+  This check has been removed because `zfpy` now supports the newer versions of `NumPy`.
+  By :user:`Meher Gajula <me-her>`, :issue:`672`
+
+Improvements
+~~~~~~~~~~~~
+* Add support for ``pcodec`` 0.3. This exposes the new ``delta_spec``
+  and ``paging_spec`` arguments, but maintains full backwards
+  compatibility for data written with older package versions.
+  By :user:`Sam Levang <slevang>`, :issue:`623`
+* If an import error is raised when trying to define a codec that is *not*
+  an optional dependency, it is no longer silently caught. Instead it will
+  be propagated to the user, as this indicates an issue with the installed
+  package.
+
+  Import errors caused by optional dependencies (ZFPY, MsgPack, CRC32C, and PCodec)
+  are still silently caught.
+  By :user:`David Stansby <dstansby>`, :issue:`550`.
+
+.. _release_0.14.1:
+
+0.14.1
+------
+
+Fixes
+~~~~~
+* Cleanups to the ``crc32c`` soft dependency.
+  Whereas in ``numcodecs`` 0.14.0 a runtime error was raised if
+  the ``CRC32C`` codec used without the ``crc32c`` installed,
+  the ``CRC32C`` codec is no longer defined at import time if
+  ``crc32c`` is not installed. This has been changed to match
+  the behaviour of other optional dependencies/codecs.
+  By :user:`John Kirkham <jakirkham>`, :issue:`637`
+
+Improvements
+~~~~~~~~~~~~
+* Add `noexcept` to `_utils` C-equiv functions
+  By :user:`John Kirkham <jakirkham>`, :issue:`641`.
+
+.. _release_0.14.0:
+
+0.14.0
+------
+
+Enhancements
+~~~~~~~~~~~~
+* Add Crc32c checksum codec.
+  By :user:`Norman Rzepka <normanrz>`, :issue:`613`.
+* Add codec wrappers for Zarr 3.
+  By :user:`Norman Rzepka <normanrz>`, :issue:`524`
+* Added mypy type checking to continuous integration.
+  By :user:`David Stansby <dstansby>`, :issue:`460`.
+
+Fixes
+~~~~~
+* Fix in-place mutation of input array in `BitRound`.
+  By :user:`Sam Levang <slevang>`, :issue:`608`
+* Fix an issue where importing numcodecs would lock the state of `multiprocessing`
+  and prevent user code to call `multiprocessing.set_start_method("spawn")`
+  subsequently.
+  By :user:`Clément Robert <neutrinoceros>` :issue:`522`
+
+Maintenance
+~~~~~~~~~~~
+* The minimum supported Python version is now Python 3.11.
+  By :user:`David Stansby <dstansby>`, :issue:`622`
+* The minimum supported numpy version is now 1.24.
+  By :user:`David Stansby <dstansby>`, :issue:`622`
+
+.. _release_0.13.1:
+
+0.13.1
+------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+* `Zstd.default_level`, `Zstd.min_level`, and `Zstd.max_level` are now class methods
+  instead of properties. This means they must now be called like ``Zstd.default_level()``
+  instead of ``Zstd.default_level``. This breaking change has been made because Python 3.13
+  removes support for class properties.
+  By :user:`David Stansby <dstansby>`, :issue:`576`.
+
+Enhancements
+~~~~~~~~~~~~
+
+* Update bundled c-blosc to v1.26.1. This updates Zlib to v1.3.1
+  and Zstd to v1.5.6.
+  By :user:`David Stansby <dstansby>`, :issue:`560`.
+* Added support for Python 3.13 :user:`David Stansby <dstansby>`, :issue:`576`.
+* Cleaned up the table of contents in the documentation to list codecs by category
+  :user:`David Stansby <dstansby>`, :issue:`458`.
+
+Maintenance
+~~~~~~~~~~~
+* Change format() and old string formatting to f-strings.
+  By :user:`Dimitri Papadopoulos Orfanos <DimitriPapadopoulos>`, :issue:`439`.
+* Remove pin on Sphinx
+  By :user:`Elliott Sales de Andrade <QuLogic>`, :issue:`552`.
+
+
+.. _release_0.13.0:
+
+0.13.0
+------
+
+Enhancements
+~~~~~~~~~~~~
+* Add checksum flag to zstd and sets the default level to 0.
+  By :user:`Norman Rzepka <normanrz>`, :issue:`519`.
+* Add PCodec
+  By :user:`Ryan Abernathey <rabernat>`, :issue:`501`.
+* Use PyData theme for docs
+  By :user:`John Kirkham <jakirkham>`, :issue:`485`.
+* Improve the structure of docs
+  By :user:`David Stansby <dstansby>`, :issue:`458`.
+
+Fix
+~~~
+* Fix VLenUTF8 encoding for read-only buffers.
+  By :user:`Isaac Virshup <ivirshup>`, :issue:`514`.
+* Fix skip of entry points backport tests
+  By :user:`Elliott Sales de Andrade <QuLogic>`, :issue:`487`.
+* Fix Upgrade to Zstd 1.5.5 due to potential corruption.
+  By :user:`Mark Kittisopikul <mkitti>`, :issue:`429`
+* Add version constraint(<2.0) for numpy in zfpy.
+  By :user:`Tom Liang <px39n>`, :issue:`540`.
+
+Maintenance
+~~~~~~~~~~~
+* The minimum supported Python version is now Python 3.10.
+  By :user:`David Stansby <dstansby>`, :issue:`531`
+* Add numpy 2 compatibility.
+  By :user:`David Stansby <dstansby>`, :issue:`535`
+* Update c-blosc to 1.21.0 to 1.21.5, zstd from 1.4.8 to 1.5.5,
+  lz4 from 1.9.3 to 1.9.4, and zlib from 1.2.8 to to 1.2.13
+  By :user:`Mark Kittisopikul <mkitti>`, :issue:`500`
+
+
 .. _release_0.12.1:
 
 0.12.1
